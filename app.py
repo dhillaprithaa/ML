@@ -164,6 +164,6 @@ else:
 
 # Menambahkan tulisan di bagian bawah
 st.markdown("---")  # Garis pemisah
-st.write("Developed by Kelompok 6")
+st.write("♡♡♡♡♡ Developed by Kelompok 6 ♡♡♡♡♡")
 
 
