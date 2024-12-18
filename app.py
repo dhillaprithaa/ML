@@ -11,6 +11,10 @@ from joblib import load, dump
 import os
 import io
 
+# Tambahkan informasi nama dan NIM di bagian atas UI
+st.sidebar.title("Dhila Pritha Amalia")
+st.sidebar.text("24060122140117")
+
 st.title("Country using K-Means Clustering")
 
 st.header("Dataset")
