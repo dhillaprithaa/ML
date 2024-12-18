@@ -12,6 +12,8 @@ import os
 import io
 
 # Tambahkan informasi nama dan NIM di bagian atas UI
+st.sidebar.title("Widiawati Sihaloho")
+st.sidebar.text("24060122120047")
 st.sidebar.title("Dhila Pritha Amalia")
 st.sidebar.text("24060122140117")
 
