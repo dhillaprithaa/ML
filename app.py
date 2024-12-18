@@ -162,3 +162,8 @@ if os.path.exists(MODEL_PATH):
 else:
     st.warning("Model belum tersedia. Silakan jalankan clustering terlebih dahulu.")
 
+# Menambahkan tulisan di bagian bawah
+st.markdown("---")  # Garis pemisah
+st.write("Developed by Kelompok 6")
+
+
