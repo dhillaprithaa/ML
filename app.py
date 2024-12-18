@@ -11,7 +11,7 @@ from joblib import load, dump
 import os
 import io
 
-st.title("Country Segmentation using K-Means Clustering")
+st.title("Country using K-Means Clustering")
 
 st.header("Dataset")
 DATA_PATH = "data/Country-data.csv"
