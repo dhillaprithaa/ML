@@ -117,15 +117,14 @@ st.header("Prediksi Cluster Menggunakan Model K-Means")
 if os.path.exists(MODEL_PATH):
     model = load(MODEL_PATH)
 
-    st.subheader("Masukkan Data untuk Prediksi Menggunakan Slider")
+    st.subheader("Masukkan Data untuk Prediksi Secara Manual")
     input_data = []
     for feature in selected_features:
-        value = st.slider(
-            f"{feature}",
-            min_value=float(df[feature].min()),
-            max_value=float(df[feature].max()),
-            value=float(df[feature].mean()),
-            step=0.01
+        value = st.number_input(
+            f"Masukkan nilai untuk {feature}:",
+            value=0.00,  # Nilai awal default
+            step=0.01,   # Langkah perubahan 0.01
+            format="%.2f"  # Format dua desimal
         )
         input_data.append(value)
 
