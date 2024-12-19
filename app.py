@@ -122,6 +122,9 @@ if os.path.exists(MODEL_PATH):
         value = st.text_input(f"Masukkan nilai untuk {feature}:", value="0.0")
         try:
             value = float(value)
+            if value < 0:
+                st.error(f"Input untuk {feature} tidak boleh negatif.")
+                value = 0.0
         except ValueError:
             st.error(f"Input untuk {feature} harus berupa angka.")
             value = 0.0
