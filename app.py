@@ -6,7 +6,6 @@ from sklearn.cluster import KMeans
 from sklearn.decomposition import PCA
 from sklearn.preprocessing import MinMaxScaler
 from sklearn.metrics import silhouette_score
-import numpy as np
 from joblib import load, dump
 import os
 
@@ -117,16 +116,15 @@ st.header("Prediksi Cluster Menggunakan Model K-Means")
 if os.path.exists(MODEL_PATH):
     model = load(MODEL_PATH)
 
-    st.subheader("Masukkan Data untuk Prediksi Menggunakan Slider")
+    st.subheader("Masukkan Data untuk Prediksi Secara Manual")
     input_data = []
     for feature in selected_features:
-        value = st.slider(
-            f"{feature}",
-            min_value=float(df[feature].min()),
-            max_value=float(df[feature].max()),
-            value=float(df[feature].mean()),
-            step=0.01
-        )
+        value = st.text_input(f"Masukkan nilai untuk {feature}:", value="0.0")
+        try:
+            value = float(value)
+        except ValueError:
+            st.error(f"Input untuk {feature} harus berupa angka.")
+            value = 0.0
         input_data.append(value)
 
     if st.button("Prediksi Cluster"):
