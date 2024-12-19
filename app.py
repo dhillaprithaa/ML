@@ -9,9 +9,8 @@ from sklearn.metrics import silhouette_score
 import numpy as np
 from joblib import load, dump
 import os
-import io
 
-# Tambahkan informasi nama dan NIM di bagian atas UI
+# Informasi Kelompok
 st.sidebar.title("Widiawati Sihaloho")
 st.sidebar.text("24060122120047")
 st.sidebar.title("Miriam Stefani Abigail Hutapea")
@@ -23,7 +22,7 @@ st.sidebar.text("24060122140117")
 
 st.title("Country using K-Means Clustering")
 
-st.header("Dataset")
+# File path
 DATA_PATH = "data/Country-data.csv"
 MODEL_PATH = "models/kmeans_model.pkl"
 
@@ -33,14 +32,14 @@ if os.path.exists(DATA_PATH):
     st.write("### Raw Data")
     st.write(df.head())
 
-    # Missing Values Check
+    # Check missing values
     st.write("### Missing Values")
     st.write(df.isnull().sum())
 
-    # Visualisasi Distribusi Data
+    # Visualisasi distribusi data untuk 5 fitur tertentu
     st.header("Visualisasi Distribusi Data")
-    numeric_columns = df.select_dtypes(include=[np.number]).columns.tolist()
-    for column in numeric_columns:
+    selected_features = ['child_mort', 'income', 'life_expec', 'total_fer', 'gdpp']
+    for column in selected_features:
         fig, ax = plt.subplots()
         sns.histplot(df[column], kde=True, ax=ax)
         ax.set_title(f"Distribusi {column}")
@@ -49,86 +48,78 @@ if os.path.exists(DATA_PATH):
     # Normalisasi Data
     st.header("Normalisasi Data")
     scaler = MinMaxScaler()
-    df[numeric_columns] = scaler.fit_transform(df[numeric_columns])
+    df[selected_features] = scaler.fit_transform(df[selected_features])
     st.write("### Data Setelah Normalisasi")
-    st.write(df.head())
+    st.write(df[selected_features].head())
 
-    # Select features for clustering
+    # Clustering
     st.header("Clustering")
-    selected_features = st.multiselect(
-        "Select Features for Clustering",
-        numeric_columns,
-        default=numeric_columns
-    )
-    if selected_features:
-        data = df[selected_features]
+    data = df[selected_features]
 
-        # Perform Clustering Analysis
-        st.subheader("Elbow Method untuk Menentukan Jumlah Cluster")
-        distortions = []
-        K_range = range(2, 11)
-        for k in K_range:
-            model = KMeans(n_clusters=k, random_state=42)
-            model.fit(data)
-            distortions.append(model.inertia_)
+    # Elbow Method
+    st.subheader("Elbow Method untuk Menentukan Jumlah Cluster")
+    distortions = []
+    K_range = range(2, 11)
+    for k in K_range:
+        model = KMeans(n_clusters=k, random_state=42)
+        model.fit(data)
+        distortions.append(model.inertia_)
 
-        # Elbow Plot
-        fig, ax = plt.subplots()
-        ax.plot(K_range, distortions, marker='o', color='blue')
-        ax.set_xlabel("Number of Clusters (K)")
-        ax.set_ylabel("Inertia")
-        ax.set_title("Elbow Method")
-        st.pyplot(fig)
+    # Elbow Plot
+    fig, ax = plt.subplots()
+    ax.plot(K_range, distortions, marker='o', color='blue')
+    ax.set_xlabel("Number of Clusters (K)")
+    ax.set_ylabel("Inertia")
+    ax.set_title("Elbow Method")
+    st.pyplot(fig)
 
-        # Select K
-        k = st.number_input("Pilih Jumlah Cluster (k):", min_value=2, max_value=10, value=3)
-        kmeans = KMeans(n_clusters=k, random_state=42)
-        clusters = kmeans.fit_predict(data)
-        df['Cluster'] = clusters
-        st.write("### Hasil Clustering")
-        st.write(df.head())
+    # Select K
+    k = st.number_input("Pilih Jumlah Cluster (k):", min_value=2, max_value=10, value=3)
+    kmeans = KMeans(n_clusters=k, random_state=42)
+    clusters = kmeans.fit_predict(data)
+    df['Cluster'] = clusters
+    st.write("### Hasil Clustering")
+    st.write(df[['child_mort', 'income', 'life_expec', 'total_fer', 'gdpp', 'Cluster']].head())
 
-        # Jumlah Data Tiap Cluster
-        st.subheader("Jumlah Data pada Tiap Cluster")
-        cluster_counts = df['Cluster'].value_counts().reset_index()
-        cluster_counts.columns = ['Cluster', 'Count']
-        st.write(cluster_counts)
+    # Statistik dan Evaluasi
+    st.subheader("Jumlah Data pada Tiap Cluster")
+    cluster_counts = df['Cluster'].value_counts().reset_index()
+    cluster_counts.columns = ['Cluster', 'Count']
+    st.write(cluster_counts)
 
-        # Statistik Tiap Cluster
-        st.subheader("Statistik Tiap Cluster")
-        cluster_stats = df.groupby('Cluster').mean(numeric_only=True)
-        st.write(cluster_stats)
+    st.subheader("Statistik Tiap Cluster")
+    cluster_stats = df.groupby('Cluster')[selected_features].mean()
+    st.write(cluster_stats)
 
-        # Silhouette Score
-        st.subheader("Silhouette Score")
-        silhouette_avg = silhouette_score(data, clusters)
-        st.write(f"Silhouette Score: {silhouette_avg:.4f}")
+    st.subheader("Silhouette Score")
+    silhouette_avg = silhouette_score(data, clusters)
+    st.write(f"Silhouette Score: {silhouette_avg:.4f}")
 
-        # PCA Visualization
-        st.subheader("PCA Visualization")
-        pca = PCA(n_components=2)
-        pca_data = pca.fit_transform(data)
-        pca_df = pd.DataFrame(pca_data, columns=['PCA1', 'PCA2'])
-        pca_df['Cluster'] = clusters
+    # PCA Visualization
+    st.subheader("PCA Visualization")
+    pca = PCA(n_components=2)
+    pca_data = pca.fit_transform(data)
+    pca_df = pd.DataFrame(pca_data, columns=['PCA1', 'PCA2'])
+    pca_df['Cluster'] = clusters
 
-        fig, ax = plt.subplots()
-        sns.scatterplot(x='PCA1', y='PCA2', hue='Cluster', data=pca_df, palette='tab10', ax=ax)
-        ax.set_title("PCA Visualization of Clusters")
-        st.pyplot(fig)
+    fig, ax = plt.subplots()
+    sns.scatterplot(x='PCA1', y='PCA2', hue='Cluster', data=pca_df, palette='tab10', ax=ax)
+    ax.set_title("PCA Visualization of Clusters")
+    st.pyplot(fig)
 
-        # Save Model Automatically
-        os.makedirs("models", exist_ok=True)
-        dump(kmeans, MODEL_PATH)
-        st.success(f"Model K-Means telah disimpan di {MODEL_PATH}")
+    # Save Model Automatically
+    os.makedirs("models", exist_ok=True)
+    dump(kmeans, MODEL_PATH)
+    st.success(f"Model K-Means telah disimpan di {MODEL_PATH}")
 
+# Prediksi Data Baru
 st.header("Prediksi Cluster Menggunakan Model K-Means")
 if os.path.exists(MODEL_PATH):
     model = load(MODEL_PATH)
 
-    # Input data manual menggunakan slider
     st.subheader("Masukkan Data untuk Prediksi Menggunakan Slider")
     input_data = []
-    for feature in numeric_columns:
+    for feature in selected_features:
         value = st.slider(
             f"{feature}",
             min_value=float(df[feature].min()),
@@ -138,32 +129,15 @@ if os.path.exists(MODEL_PATH):
         )
         input_data.append(value)
 
-    # Tombol untuk prediksi
     if st.button("Prediksi Cluster"):
-        # Membuat DataFrame dari input slider
-        input_df = pd.DataFrame([input_data], columns=numeric_columns)
-
-        # Normalisasi input sesuai skala MinMaxScaler
-        scaler = MinMaxScaler()
-        scaled_input = scaler.fit_transform(input_df)
-
-        # Prediksi cluster
-        prediction = model.predict(scaled_input)
+        input_df = pd.DataFrame([input_data], columns=selected_features)
+        prediction = model.predict(input_df)
         st.success(f"Data yang dimasukkan diprediksi masuk ke Cluster: {prediction[0]}")
-
-        # Tampilkan Data Input dan Hasil Prediksi
-        st.write("### Data Input yang Dimaksud")
-        st.write(input_df)
-
-        # Tambahkan kolom hasil prediksi ke DataFrame
         input_df['Predicted_Cluster'] = prediction[0]
-        st.write("### Hasil Prediksi dengan Data Input")
+        st.write("### Data Input")
         st.write(input_df)
 else:
     st.warning("Model belum tersedia. Silakan jalankan clustering terlebih dahulu.")
 
-# Menambahkan tulisan di bagian bawah
-st.markdown("---")  # Garis pemisah
+st.markdown("---")
 st.write("♡♡♡♡♡ Developed by Kelompok 6 ♡♡♡♡♡")
-
-
