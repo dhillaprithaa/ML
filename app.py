@@ -16,7 +16,7 @@ st.sidebar.text("24060122120047")
 st.sidebar.title("Miriam Stefani Abigail Hutapea")
 st.sidebar.text("24060122130051")
 st.sidebar.title("Clara Zita Nabilla")
-st.sidebar.text("24060122120057")
+st.sidebar.text("24060122130057")
 st.sidebar.title("Dhila Pritha Amalia")
 st.sidebar.text("24060122140117")
 
