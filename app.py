@@ -117,10 +117,16 @@ st.header("Prediksi Cluster Menggunakan Model K-Means")
 if os.path.exists(MODEL_PATH):
     model = load(MODEL_PATH)
 
-    st.subheader("Masukkan Data untuk Prediksi Secara Manual")
+    st.subheader("Masukkan Data untuk Prediksi Menggunakan Slider")
     input_data = []
     for feature in selected_features:
-        value = st.number_input(f"Masukkan nilai untuk {feature}:")
+        value = st.slider(
+            f"{feature}",
+            min_value=float(df[feature].min()),
+            max_value=float(df[feature].max()),
+            value=float(df[feature].mean()),
+            step=0.01
+        )
         input_data.append(value)
 
     if st.button("Prediksi Cluster"):
@@ -134,4 +140,4 @@ else:
     st.warning("Model belum tersedia. Silakan jalankan clustering terlebih dahulu.")
 
 st.markdown("---")
-st.write("\u2661\u2661\u2661\u2661\u2661 Developed by Kelompok 6 \u2661\u2661\u2661\u2661\u2661")
+st.write("♡♡♡♡♡ Developed by Kelompok 6 ♡♡♡♡♡")
