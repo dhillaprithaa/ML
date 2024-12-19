@@ -120,12 +120,7 @@ if os.path.exists(MODEL_PATH):
     st.subheader("Masukkan Data untuk Prediksi Secara Manual")
     input_data = []
     for feature in selected_features:
-        value = st.number_input(
-            f"Masukkan nilai untuk {feature}:",
-            value=0.00,  # Nilai awal default
-            step=0.01,   # Langkah perubahan 0.01
-            format="%.2f"  # Format dua desimal
-        )
+        value = st.number_input(f"Masukkan nilai untuk {feature}:")
         input_data.append(value)
 
     if st.button("Prediksi Cluster"):
