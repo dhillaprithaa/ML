@@ -4,7 +4,6 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 from sklearn.cluster import KMeans
 from sklearn.decomposition import PCA
-from sklearn.preprocessing import MinMaxScaler
 from sklearn.metrics import silhouette_score
 from joblib import load, dump
 import os
@@ -43,13 +42,6 @@ if os.path.exists(DATA_PATH):
         sns.histplot(df[column], kde=True, ax=ax)
         ax.set_title(f"Distribusi {column}")
         st.pyplot(fig)
-
-    # Normalisasi Data
-    st.header("Normalisasi Data")
-    scaler = MinMaxScaler()
-    df[selected_features] = scaler.fit_transform(df[selected_features])
-    st.write("### Data Setelah Normalisasi")
-    st.write(df[selected_features].head())
 
     # Clustering
     st.header("Clustering")
